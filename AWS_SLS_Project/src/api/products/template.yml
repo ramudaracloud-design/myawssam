@@ -1,0 +1,115 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+
+Resources:
+  GetProducts:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: getproducts
+      CodeUri: .
+      Handler: get_products.lambda_handler
+      Runtime: python3.12
+      Architectures:
+        - x86_64
+      Timeout: 5
+      MemorySize: 512
+      Layers:
+        - Fn::ImportValue:
+            CommonLayerArn6
+      Role:
+        Fn::ImportValue: LambdaExecutionRoleArn
+      Events:
+        GetProducts:
+          Type: HttpApi
+          Properties:
+            Path: /products
+            Method: GET
+
+  CreateProducts:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: createproducts
+      CodeUri: .
+      Handler: create_products.lambda_handler
+      Runtime: python3.12
+      Architectures:
+        - x86_64
+      Timeout: 5
+      MemorySize: 512
+      Layers:
+        - Fn::ImportValue:
+            CommonLayerArn6
+      Role:
+        Fn::ImportValue: LambdaExecutionRoleArn
+      Events:
+        CreateProducts:
+          Type: HttpApi
+          Properties:
+            Path: /products
+            Method: POST
+
+  UpdateProducts:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: updateproducts
+      CodeUri: .
+      Handler: update_products.lambda_handler
+      Runtime: python3.12
+      Architectures:
+        - x86_64
+      Timeout: 5
+      MemorySize: 512
+      Layers:
+        - Fn::ImportValue:
+            CommonLayerArn6
+      Role:
+        Fn::ImportValue: LambdaExecutionRoleArn
+      Events:
+        UpdateProducts:
+          Type: HttpApi
+          Properties:
+            Path: /products/{productId}
+            Method: PUT
+
+  DeleteProducts:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: deleteproducts
+      CodeUri: .
+      Handler: delete_products.lambda_handler
+      Runtime: python3.12
+      Architectures:
+        - x86_64
+      Timeout: 5
+      MemorySize: 512
+      Layers:
+        - Fn::ImportValue:
+            CommonLayerArn6
+      Role:
+        Fn::ImportValue: LambdaExecutionRoleArn
+      Events:
+        DeleteProducts:
+          Type: HttpApi
+          Properties:
+            Path: /products/{productId}
+            Method: DELETE
+
+Outputs:
+  GetProducts:
+    Description: Get all products lambda ARN
+    Value: Fn::GetAtt GetProducts.Arn
+
+  CreateProducts:
+    Description: Create product lambda ARN
+    Value: Fn::GetAtt CreateProducts.Arn
+
+  UpdateProducts:
+    Description: Update product lambda ARN
+    Value: Fn::GetAtt UpdateProducts.Arn
+
+  DeleteProducts:
+    Description: Delete product lambda ARN
+    Value: Fn::GetAtt DeleteProducts.Arn
+
+
+  
