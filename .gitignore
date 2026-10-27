@@ -1,0 +1,25 @@
+# macOS system files
+.DS_Store
+
+# Docs build artifacts
+site/
+docs/clients/
+**/docs/client/
+
+# Virtual environments
+.venv
+venv
+
+# Caches
+__pycache__/
+.ruff_cache/
+.pytest_cache/
+
+# Dependency lock file for uv
+uv.lock
+
+# Distribution / packaging
+dist/
+
+# scratch workspace
+/workspace
