@@ -1,0 +1,205 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+
+Description: >
+  SAM Template - DynamoDB Tables for Users, Products, Comments, and Carts
+
+Globals:
+  Function:
+    Runtime: python3.12
+    Timeout: 30
+
+Resources:
+
+#########################################################################
+# Users Table
+#########################################################################
+
+  UsersTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: Users
+      BillingMode: PAY_PER_REQUEST
+
+      AttributeDefinitions:
+        - AttributeName: userId
+          AttributeType: S
+        - AttributeName: email
+          AttributeType: S
+
+      KeySchema:
+        - AttributeName: userId
+          KeyType: HASH
+      # Global Secondary Index to query users efficiently by Email
+      GlobalSecondaryIndexes:
+        - IndexName: EmailIndex
+          KeySchema:
+            - AttributeName: email
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+
+      SSESpecification:
+        SSEEnabled: true
+
+      Tags:
+        - Key: Application
+          Value: Ecommerce
+        - Key: Environment
+          Value: Dev
+
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+
+#########################################################################
+# Products Table
+#########################################################################
+
+  ProductsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: Products
+      BillingMode: PAY_PER_REQUEST
+
+      AttributeDefinitions:
+        - AttributeName: productId
+          AttributeType: S
+        - AttributeName: category
+          AttributeType: S
+
+      KeySchema:
+        - AttributeName: productId
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: CategoryIndex
+          KeySchema:
+            - AttributeName: category
+              KeyType: HASH
+            - AttributeName: productId
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+            
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+
+      SSESpecification:
+        SSEEnabled: true
+
+      Tags:
+        - Key: Application
+          Value: Ecommerce
+        - Key: Environment
+          Value: Dev
+
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+
+#########################################################################
+# Comments Table
+#########################################################################
+
+  CommentsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: Comments
+      BillingMode: PAY_PER_REQUEST
+
+      AttributeDefinitions:
+        - AttributeName: productId
+          AttributeType: S
+        - AttributeName: commentId
+          AttributeType: S
+
+      KeySchema:
+        - AttributeName: productId
+          KeyType: HASH
+        - AttributeName: commentId
+          KeyType: RANGE
+
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+
+      SSESpecification:
+        SSEEnabled: true
+
+      Tags:
+        - Key: Application
+          Value: Ecommerce
+        - Key: Environment
+          Value: Dev
+
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+
+#########################################################################
+# Carts Table
+#########################################################################
+
+  CartsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: Carts
+      BillingMode: PAY_PER_REQUEST
+
+      AttributeDefinitions:
+        - AttributeName: userId
+          AttributeType: S
+        - AttributeName: productId
+          AttributeType: S
+
+      KeySchema:
+        - AttributeName: userId
+          KeyType: HASH
+        - AttributeName: productId
+          KeyType: RANGE
+
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      TimeToLiveSpecification:
+        AttributeName: ttl
+        Enabled: true
+      SSESpecification:
+        SSEEnabled: true
+
+      Tags:
+        - Key: Application
+          Value: Ecommerce
+        - Key: Environment
+          Value: Dev
+
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+
+#########################################################################
+# Outputs
+#########################################################################
+
+Outputs:
+
+  UsersTableName:
+    Value: !Ref UsersTable
+
+  ProductsTableName:
+    Value: !Ref ProductsTable
+
+  CommentsTableName:
+    Value: !Ref CommentsTable
+
+  CartsTableName:
+    Value: !Ref CartsTable
+
+  UsersTableArn:
+    Value: !GetAtt UsersTable.Arn
+
+  ProductsTableArn:
+    Value: !GetAtt ProductsTable.Arn
+
+  CommentsTableArn:
+    Value: !GetAtt CommentsTable.Arn
+
+  CartsTableArn:
+    Value: !GetAtt CartsTable.Arn

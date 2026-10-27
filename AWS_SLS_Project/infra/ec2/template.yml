@@ -1,0 +1,47 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+
+Parameters:
+  MyKeyName:
+    Description: AWS EC2 instan keyname
+    Type: AWS::EC2::KeyPair::KeyName
+  MyAvailabilityZone:
+    Description: AWS EC2 instance availability zone
+    Type: String
+    Default: ap-south-1a
+    AllowedValues: 
+      - ap-south-1a
+      - ap-south-1b
+      - ap-south-1c
+  MyInstanceType:
+    Description: AWS EC2 instance type
+    Type: String
+    Default: t3.micro
+    AllowedValues:
+      - t3.micro
+      - t3.small
+      - t3.medium
+      - t3.large
+
+Resources:
+  EC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.micro
+      ImageId: ami-00d2dbb426772b03a # Amazon Linux 2 AMI (HVM), SSD Volume Type
+      KeyName: !Ref MyKeyName # Replace with your key pair name
+      AvailabilityZone: !Ref MyAvailabilityZone
+      SecurityGroupIds:
+        - sg-0255a46bcbe395b8d # Replace with your security group ID
+      SubnetId: subnet-0accfdbf62a617668 # Replace with your subnet ID
+      Tags:
+        - Key: Name
+          Value: MySAMEC2
+
+Outputs:
+  MyInstanceId:
+    Description: This is my Ec2 Instance id
+    Value: Fn::Ref EC2Instance
+  EC2InstanceArn:
+    Description: 'The constructed ARN of the EC2 Instance'
+    Value: !Sub 'arn:${AWS::Partition}:ec2:${AWS::Region}:${AWS::AccountId}:instance/${EC2Instance}'

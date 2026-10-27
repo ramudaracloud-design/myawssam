@@ -1,0 +1,68 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+
+Resources:
+
+  CommonLambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+
+      RoleName: common-lambda-execution-role
+
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+
+        Statement:
+          - Effect: Allow
+
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+
+            Action:
+              - sts:AssumeRole
+
+      ManagedPolicyArns:
+
+        # CloudWatch Logs
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+
+  DynamoDBCrudPolicy:
+    Type: AWS::IAM::Policy
+
+    Properties:
+
+      PolicyName: DynamoDBCrudPolicy
+
+      Roles:
+        - !Ref CommonLambdaExecutionRole
+
+      PolicyDocument:
+
+        Version: "2012-10-17"
+
+        Statement:
+
+          - Effect: Allow
+
+            Action:
+              - dynamodb:GetItem
+              - dynamodb:PutItem
+              - dynamodb:UpdateItem
+              - dynamodb:DeleteItem
+              - dynamodb:Query
+              - dynamodb:Scan
+
+            Resource:
+              - arn:aws:dynamodb:ap-south-1:682033482168:table/Users
+              - arn:aws:dynamodb:ap-south-1:682033482168:table/Products
+              - arn:aws:dynamodb:ap-south-1:682033482168:table/Comments
+              - arn:aws:dynamodb:ap-south-1:682033482168:table/Carts
+Outputs:
+
+  LambdaExecutionRoleArn:
+
+    Value: !GetAtt CommonLambdaExecutionRole.Arn
+
+    Export:
+      Name: LambdaExecutionRoleArn
