@@ -1,0 +1,21 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+
+Resources:
+
+  CommonLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: common-dynamodb-layer
+      Description: Shared DynamoDB CRUD library
+      ContentUri: .
+      CompatibleRuntimes:
+        - python3.12
+      RetentionPolicy: Retain
+
+Outputs:
+
+  CommonLayerArn:
+    Value: !Ref CommonLayer
+    Export:
+      Name: CommonLayerArn6
